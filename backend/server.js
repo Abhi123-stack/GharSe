@@ -1,57 +1,26 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const cookRoutes = require('./routes/cookRoutes');
-const authRoutes = require("./routes/auth");
-
-
-require('dotenv').config();
+const express = require("express");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
-app.use('/api/cooks', cookRoutes);
-app.use('/uploads', express.static('uploads'));
-app.use("/api/auth", authRoutes);
 
+const PORT = process.env.PORT || 5000;
 
-
-
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected ✅'))
-  .catch((err) => console.log(err));
-
-const UserSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  phone: String
+.then(() => {
+    console.log("MongoDB Connected Successfully");
+})
+.catch((err) => {
+    console.log("MongoDB Connection Error:", err);
 });
 
-
-
-app.get('/', (req, res) => {
-  res.send('GharSe Backend & DB Running 🚀');
+// Test Route
+app.get("/", (req,res)=>{
+    res.send("Backend Running Successfully");
 });
 
-app.post('/api/users/add', async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json({ message: "User Added", data: newUser });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/users/all', async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+app.listen(PORT, ()=>{
+    console.log(`Server running on port ${PORT}`);
 });
